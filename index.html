@@ -1,0 +1,1188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml" lang="en-US">
+
+<head profile="https://gmpg.org/xfn/11">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Gurukul Public School, Chandikhol, Odisha</title>
+    <link rel="alternate" type="application/rss+xml" title="Gurukul Public School Feed" href="./feedback.html" />
+    <link rel="pingback" href="https://sainikschoolbhubaneswar.org/xmlrpc.php" />
+    <link rel="shortcut icon" href="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/favicon.ico" />
+    <script type="text/javascript"
+        src="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/images/menu_files/jquery-1.js"></script>
+    <script type="text/javascript"
+        src="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/images/menu_files/ddaccordion.js"></script>
+    <script type="text/javascript"
+        src="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/images/menu_files/accordianstyle.js"></script>
+    <script src="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/scripts/swfobject_modified.js"
+        type="text/javascript"></script>
+    <script src="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/scripts/validate.js"
+        type="text/javascript"></script>
+    <script src="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/scripts/datetimepicker.js"
+        type="text/javascript"></script>
+    <link href="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/css/template_css.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/css/lightbox.css" rel="stylesheet"
+        type="text/css" />
+    <link href="./assets/calendar.css" rel="stylesheet" type="text/css"/>
+    <link href="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/style.css" rel="stylesheet" type="text/css" />
+    <script language="javascript">
+        
+   
+    function generate_year_range(start, end) {
+    var years = "";
+    for (var year = start; year <= end; year++) {
+        years += "<option value='" + year + "'>" + year + "</option>";
+    }
+    return years;
+}
+
+today = new Date();
+currentMonth = today.getMonth();
+currentYear = today.getFullYear();
+selectYear = document.getElementById("year");
+selectMonth = document.getElementById("month");
+
+
+createYear = generate_year_range(1970, 2050);
+/** or
+ * createYear = generate_year_range( 1970, currentYear );
+ */
+
+document.getElementById("year").innerHTML = createYear;
+
+var calendar = document.getElementById("calendar");
+var lang = calendar.getAttribute('data-lang');
+
+var months = "";
+var days = "";
+
+var monthDefault = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+var dayDefault = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+if (lang == "en") {
+    months = monthDefault;
+    days = dayDefault;
+} else if (lang == "id") {
+    months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    days = ["Ming", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+} else if (lang == "fr") {
+    months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    days = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+} else {
+    months = monthDefault;
+    days = dayDefault;
+}
+
+
+var $dataHead = "<tr>";
+for (dhead in days) {
+    $dataHead += "<th data-days='" + days[dhead] + "'>" + days[dhead] + "</th>";
+}
+$dataHead += "</tr>";
+
+//alert($dataHead);
+document.getElementById("thead-month").innerHTML = $dataHead;
+
+
+monthAndYear = document.getElementById("monthAndYear");
+showCalendar(currentMonth, currentYear);
+
+
+
+function next() {
+    currentYear = (currentMonth === 11) ? currentYear + 1 : currentYear;
+    currentMonth = (currentMonth + 1) % 12;
+    showCalendar(currentMonth, currentYear);
+}
+
+function previous() {
+    currentYear = (currentMonth === 0) ? currentYear - 1 : currentYear;
+    currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
+    showCalendar(currentMonth, currentYear);
+}
+
+function jump() {
+    currentYear = parseInt(selectYear.value);
+    currentMonth = parseInt(selectMonth.value);
+    showCalendar(currentMonth, currentYear);
+}
+
+function showCalendar(month, year) {
+
+    var firstDay = ( new Date( year, month ) ).getDay();
+
+    tbl = document.getElementById("calendar-body");
+
+    
+    tbl.innerHTML = "";
+
+    
+    monthAndYear.innerHTML = months[month] + " " + year;
+    selectYear.value = year;
+    selectMonth.value = month;
+
+    // creating all cells
+    var date = 1;
+    for ( var i = 0; i < 6; i++ ) {
+        
+        var row = document.createElement("tr");
+
+        
+        for ( var j = 0; j < 7; j++ ) {
+            if ( i === 0 && j < firstDay ) {
+                cell = document.createElement( "td" );
+                cellText = document.createTextNode("");
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            } else if (date > daysInMonth(month, year)) {
+                break;
+            } else {
+                cell = document.createElement("td");
+                cell.setAttribute("data-date", date);
+                cell.setAttribute("data-month", month + 1);
+                cell.setAttribute("data-year", year);
+                cell.setAttribute("data-month_name", months[month]);
+                cell.className = "date-picker";
+                cell.innerHTML = "<span>" + date + "</span>";
+
+                if ( date === today.getDate() && year === today.getFullYear() && month === today.getMonth() ) {
+                    cell.className = "date-picker selected";
+                }
+                row.appendChild(cell);
+                date++;
+            }
+
+
+        }
+
+        tbl.appendChild(row);
+    }
+
+}
+
+function daysInMonth(iMonth, iYear) {
+    return 32 - new Date(iYear, iMonth, 32).getDate();
+}
+</script>
+    <link rel='dns-prefetch' href='//s.w.org' />
+    <script type="text/javascript">
+                window._wpemojiSettings = { "baseUrl": "https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/", "ext": ".png", "svgUrl": "https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/", "svgExt": ".svg", "source": { "concatemoji": "https:\/\/sainikschoolbhubaneswar.org\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.0.16" } };
+                !function (e, a, t) { var n, r, o, i = a.createElement("canvas"), p = i.getContext && i.getContext("2d"); function s(e, t) { var a = String.fromCharCode; p.clearRect(0, 0, i.width, i.height), p.fillText(a.apply(this, e), 0, 0); e = i.toDataURL(); return p.clearRect(0, 0, i.width, i.height), p.fillText(a.apply(this, t), 0, 0), e === i.toDataURL() } function c(e) { var t = a.createElement("script"); t.src = e, t.defer = t.type = "text/javascript", a.getElementsByTagName("head")[0].appendChild(t) } for (o = Array("flag", "emoji"), t.supports = { everything: !0, everythingExceptFlag: !0 }, r = 0; r < o.length; r++)t.supports[o[r]] = function (e) { if (!p || !p.fillText) return !1; switch (p.textBaseline = "top", p.font = "600 32px Arial", e) { case "flag": return s([55356, 56826, 55356, 56819], [55356, 56826, 8203, 55356, 56819]) ? !1 : !s([55356, 57332, 56128, 56423, 56128, 56418, 56128, 56421, 56128, 56430, 56128, 56423, 56128, 56447], [55356, 57332, 8203, 56128, 56423, 8203, 56128, 56418, 8203, 56128, 56421, 8203, 56128, 56430, 8203, 56128, 56423, 8203, 56128, 56447]); case "emoji": return !s([55358, 56760, 9792, 65039], [55358, 56760, 8203, 9792, 65039]) }return !1 }(o[r]), t.supports.everything = t.supports.everything && t.supports[o[r]], "flag" !== o[r] && (t.supports.everythingExceptFlag = t.supports.everythingExceptFlag && t.supports[o[r]]); t.supports.everythingExceptFlag = t.supports.everythingExceptFlag && !t.supports.flag, t.DOMReady = !1, t.readyCallback = function () { t.DOMReady = !0 }, t.supports.everything || (n = function () { t.readyCallback() }, a.addEventListener ? (a.addEventListener("DOMContentLoaded", n, !1), e.addEventListener("load", n, !1)) : (e.attachEvent("onload", n), a.attachEvent("onreadystatechange", function () { "complete" === a.readyState && t.readyCallback() })), (n = t.source || {}).concatemoji ? c(n.concatemoji) : n.wpemoji && n.twemoji && (c(n.twemoji), c(n.wpemoji))) }(window, document, window._wpemojiSettings);
+    </script>
+    <style type="text/css">
+        img.wp-smiley,
+        img.emoji {
+            display: inline !important;
+            border: none !important;
+            box-shadow: none !important;
+            height: 1em !important;
+            width: 1em !important;
+            margin: 0 .07em !important;
+            vertical-align: -0.1em !important;
+            background: none !important;
+            padding: 0 !important;
+        }
+    </style>
+    <link rel='stylesheet' id='wp-block-library-css'
+        href='https://sainikschoolbhubaneswar.org/wp-includes/css/dist/block-library/style.min.css?ver=5.0.16'
+        type='text/css' media='all' />
+    <link rel='stylesheet' id='contact-form-7-css'
+        href='https://sainikschoolbhubaneswar.org/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.1.1'
+        type='text/css' media='all' />
+    <link rel='stylesheet' id='wp-color-picker-css'
+        href='https://sainikschoolbhubaneswar.org/wp-admin/css/color-picker.min.css?ver=5.0.16' type='text/css'
+        media='all' />
+    <link rel='stylesheet' id='colorbox-css-css'
+        href='https://sainikschoolbhubaneswar.org/wp-content/plugins/wcp-openweather/assets/libs/colorbox/colorbox.css?ver=5.0.16'
+        type='text/css' media='all' />
+    <link rel='stylesheet' id='rpw-css-css'
+        href='https://sainikschoolbhubaneswar.org/wp-content/plugins/wcp-openweather/assets/css/style.css?ver=5.0.16'
+        type='text/css' media='all' />
+    <link rel='stylesheet' id='rpw-theme-6267b5949565b-css-css'
+        href='https://sainikschoolbhubaneswar.org/wp-content/plugins/wcp-openweather/theme/default/assets/css/style.css?ver=5.0.16'
+        type='text/css' media='all' />
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-includes/js/jquery/jquery.js?ver=1.12.4'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-content/plugins/events-calendar/js/jquery.bgiframe.js?ver=2.1'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-content/plugins/events-calendar/js/jquery.tooltip.min.js?ver=1.3'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-includes/js/jquery/ui/core.min.js?ver=1.11.4'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-includes/js/jquery/ui/widget.min.js?ver=1.11.4'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-includes/js/jquery/ui/mouse.min.js?ver=1.11.4'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-includes/js/jquery/ui/draggable.min.js?ver=1.11.4'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-includes/js/jquery/ui/slider.min.js?ver=1.11.4'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-includes/js/jquery/jquery.ui.touch-punch.js?ver=0.2.2'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-admin/js/iris.min.js?ver=5.0.16'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-admin/js/color-picker.js?ver=5.0.16'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-content/plugins/wcp-openweather/assets/libs/colorbox/jquery.colorbox-min.js?ver=5.0.16'></script>
+    <script type='text/javascript'>
+                /* <![CDATA[ */
+                var rpw_gapi = { "enabledGoogleMapsApi": "1", "existsGoogleApiKey": "", "emptyGoogleApiKeyMessage": "Google API key is required. Please, enter valid Google API Key in the \"API\" tab." };
+/* ]]> */
+    </script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-content/plugins/wcp-openweather/assets/js/googlemap.js?ver=5.0.16'></script>
+    <script type='text/javascript'>
+                /* <![CDATA[ */
+                var ajax_rpw = { "base_url": "https:\/\/sainikschoolbhubaneswar.org", "ajax_url": "https:\/\/sainikschoolbhubaneswar.org\/wp-admin\/admin-ajax.php", "ajax_nonce": "96897fc612" };
+/* ]]> */
+    </script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-content/plugins/wcp-openweather/assets/js/main.js?ver=5.0.16'></script>
+    <script type='text/javascript'
+        src='https://sainikschoolbhubaneswar.org/wp-content/plugins/wcp-openweather/theme/default/assets/js/main.js?ver=5.0.16'></script>
+    <link rel='https://api.w.org/' href='https://sainikschoolbhubaneswar.org/wp-json/' />
+    <link rel="EditURI" type="application/rsd+xml" title="RSD"
+        href="https://sainikschoolbhubaneswar.org/xmlrpc.php?rsd" />
+    <link rel="wlwmanifest" type="application/wlwmanifest+xml"
+        href="https://sainikschoolbhubaneswar.org/wp-includes/wlwmanifest.xml" />
+    <meta name="generator" content="WordPress 5.0.16" />
+    <!-- Start Of Script Generated By Events-Calendar [Luke Howell | www.lukehowell.com] and [R. MALKA | www.heirem.fr] -->
+    <!-- More information at http://wp-eventscalendar.com. -->
+    <link type="text/css" rel="stylesheet"
+        href="https://sainikschoolbhubaneswar.org/wp-includes/js/thickbox/thickbox.css" />
+    <link type="text/css" rel="stylesheet"
+        href="https://sainikschoolbhubaneswar.org/wp-content/plugins/events-calendar/css/events-calendar.css" />
+    <script type="text/javascript">
+                // <![CDATA[
+                var ecd = {};
+                ecd.jq = jQuery.noConflict(false);
+	//]]>
+    </script>
+    <!-- End Of Script Generated By Events-Calendar - Version: 6.7.6 -->
+    <!-- <meta name="NextGEN" version="3.1.4" /> -->
+    <style>
+        .super {
+            text-decoration: blink;
+        }
+
+        .ad {
+            position: absolute;
+            margin-top: -100px;
+            display: hidden;
+        }
+    </style>
+    <script type="text/javascript">
+
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', 'UA-30850872-8']);
+                _gaq.push(['_trackPageview']);
+
+                (function () {
+                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                })();
+
+    </script>
+</head>
+
+<body>
+    <!-- <div class="ad">
+	<ul>
+		<li><a href="https://dwteam.in">DW Team | A Blog for Complete Data WarehouseDW Team</a></li>
+	</ul>
+</div> -->
+    <div class="main">
+        <div class="headergpsc">
+
+            <img src="assets/Banner Photo.jpg" alt="Gurukul Poster" width="971px" height="250px">
+        </div>
+        <!-- Menu NAV1-->
+        <div class="topmenu">
+            <ul id="mainlevel-nav">
+                <li><a href="https://gpscodisha.com/index.html">HOME</a></li>
+                <li>
+                    <div class="menu-topmenu-container">
+                        <ul id="menu-topmenu" class="menu">
+                            <li id="menu-item-7271"
+                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7271"><a
+                                    href="./about-us-2.html">
+                                    <font COLOR="white"><b>ABOUT US</b></font>
+                                    <font color="navy">
+                                </a></li>
+                            <li id="menu-item-7260"
+                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7260"><a
+                                    href="./online-payment-policy.html">
+                                    <bg COLOR="white"><b>ONLINE PAYMENT POLICY</b>
+                                        <FONT COLOR="navy">
+                                </a></li>
+                            <!-- <li id="menu-item-7264" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7264"><a href="./rti.html"><FONT COLOR="white"><B>RTI</B><FONT COLOR="navy"></a></li> -->
+                            <li id="menu-item-7257"
+                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7257"><a
+                                    href="./fee-refund-policy.html">
+                                    <bg color=white><b>FEE REFUND POLICY<b>
+                                                <FONT COLOR="NAVY">
+                                </a></li>
+                            <li id="menu-item-7265"
+                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7265"><a
+                                    href="./feedback.html">
+                                    <FONT COLOR="white"><b>FEEDBACK</b>
+                                        <FONT COLOR="navy">
+                                </a></li>
+                            <li id="menu-item-7261"
+                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7261"><a
+                                    href="./terms-and-condition.html">
+                                    <FONT COLOR="white"><b>TERMS AND CONDITION</b>
+                                        <FONT COLOR="navy">
+                                </a></li>
+                            <li id="menu-item-7258"
+                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7258"><a
+                                    href="./website-disclaimer.html">
+                                    <bg COLOR="white"><B>WEBSITE DISCLAIMER</B>
+                                        <FONT COLOR="navy">
+                                </a></li>
+                            <!--  <li id="menu-item-8049" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8049"><a href="./aissee-2021-22.html"><bg COLOR="white"> <b>AISSEE-2022</b><font color="navy"><img src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" align="center" width="32" height="19"></a></li>   -->
+                            <li id="menu-item-8288"
+                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8288"><a
+                                    href="./recruitment.html">
+                                    <bg COLOR="white"> <b>CAREER</b>
+                                        <font color="navy">
+                                </a></li>
+                            <!--  <li id="menu-item-8437" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8437"><a href="./ppc-2022.html"><bg COLOR="White"> <b>PPC- 2022</b><font color="navy"><img src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" align="center" width="32" height="19"></a></li>  -->
+                            <li id="menu-item-8557"
+                                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8557"><a
+                                    href="./mandatory-public-disclosure.html">
+                                    <BG COLOR="WHITE"> <b>MANDATORY PUBLIC DISCLOSURE</b>
+                                        <font COLOR="NAVY"><img
+                                                src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif"
+                                                align="center" width="32" height="19">
+                                </a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="topcontent">
+            <div class="topcontentleft">
+                <table cellpadding="0" cellspacing="0" class="moduletable">
+                    <tr>
+                        <th align="left" valign="top">Message:</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="./assets/logo.png" alt=" " hspace="5" width="122" height="120" align="left" />
+                            <div align="justify" style="color:#000000 !important; line-height:15px; font-size:13px">
+                                <br /><b></b><br />
+                                “
+
+                                The prime objective of Gurukul Public School, Chandikhol is to focus on discovering,
+                                developing and drawing out the hidden potential and the magic lying dormant inside
+                                all of its students. From academics to co-curricular activities, perseverance and a
+                                never-say-die attitude are entrenched in the heart of every student not only making
+                                them good students but brilliant human beings. In today’s dynamic world, a 360
+                                degree development and grooming is of supreme importance and through our campus, we
+                                create an inimitable environment for future leaders, entrepreneurs and professional
+                                who possess skills and aptitudes in an array of functional disciplines.”.
+
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="topcontentright">
+                <table cellpadding="0" cellspacing="0" class="moduletable">
+                    <tr>
+                        <th align="left" valign="top">Notice Board</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <marquee id="jj" behavior="scroll" height="100px" direction="up" onmouseover="this.stop();"
+                                onmouseout="this.start();" scrollamount="1" scrolldelay="1">
+                                <div>
+                                    <p><span
+                                            style="font-family: helvetica, arial, sans-serif; color: #ccffff; font-size: 12pt;">ADMISSION
+                                            OPEN&#8230;&#8230;&#8230;</span></p>
+                                    <p><span
+                                            style="color: #ff0000; font-family: helvetica, arial, sans-serif; font-size: 10pt;"><strong><span
+                                                    style="color: #ff0000;"><a style="color: #ff0000;" href=" "><span
+                                                            style="color: #ccffff;">FROM NURSERY TO
+                                                            CLASS-12</span></a><a style="color: #ff0000;"
+                                                        href="https://sainikschoolbhubaneswar.org/wp-content/uploads/2022/03/a-Sample-Call-Letter-for-Document-Verification-and-Medical-Schedule.pdf"><img
+                                                            src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif"
+                                                            width="32" height="19"
+                                                            align="center"></a></span></strong></span></p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                </div>
+                                <p>&nbsp;</p>
+                                <p>&nbsp;</p>
+
+                            </marquee>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="margin-left:64%">
+            <div style="text-align: left;margin-bottom: 8px;">
+                <div style="font-size: 18px;margin-bottom: 3px;text-decoration: underline;">VISION</div>
+                <div style="color: black;">To mould and reshape and young minds through ethical,social and moral values
+                    to bloom into responsible global citizens.</div>
+            </div>
+            <div style="text-align: left;">
+                <div style="font-size: 18px;margin-bottom: 3px;margin-bottom: 7px;text-decoration: underline;">MISSION
+                </div>
+                <div style="color: black;">To strive relentlessly and vigorously to realise the vision by making the
+                    best use of good infrastructure and resources with experienced, talented, dynamic and commited
+                    faculty.</div>
+                    <br>
+            </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- BODY---------->
+        <div class="maincontent">
+            <div class="left">
+                <div class="mainmenu">
+                    <table cellpadding="0" cellspacing="0" class="moduletable">
+                        <tr>
+                            <th align="left" valign="top">&nbsp;</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="pagemenu">
+                                    <ul>
+                                        <li class="page_item page-item-873"><a
+                                                href="https://gpscodisha.com/about-us-2.html">
+                                                <FONT COLOR="purple"><b>ABOUT US</b></font>
+                                            </a></li>
+                                        <li class="page_item page-item-1508"><a
+                                                href="https://gpscodisha.com/achievement.html">
+                                                <FONT COLOR="purple"><b>ACHIEVEMENT</b></font><img
+                                                    src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif"
+                                                    align="center" width="32" height="19">
+                                            </a></li>
+                                        <!--    <li class="page_item page-item-1871"><a href="https://gpscodisha.com/cbse-books.html"><FONT COLOR="PURPLE"><b>CBSE BOOKS (FREE)</b></font></a></li> -->
+                                        <!--   <li class="page_item page-item-2483"><a href="https://gpscodisha.com/fee-status.html"><FONT COLOR="purple"> <b>FEE STATUS</b><img class="" src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" width="27" height="18" align="center"></a></li>  -->
+                                        <!--   <li class="page_item page-item-3366 page_item_has_children"><a href="https://gpscodisha.com/online-fee-payment.html"><FONT COLOR="purple"> <b> ONLINE FEE PAYMENT</b></a></li>  -->
+                                        <!--   <li class="page_item page-item-3306"><a href="https://gpscodisha.com/online-payment-policy.html"><FONT COLOR="purple"><b>ONLINE PAYMENT POLICY</b></a></li>  -->
+                                        <!--   <li class="page_item page-item-3308"><a href="https://gpscodisha.com/privacy-policy.html"><FONT COLOR="purple"></b>PRIVACY POLICY</b></a></li>
+<li class="page_item page-item-3310"><a href="https://gpscodisha.com/website-disclaimer.html"><FONT COLOR="purple"><B>WEBSITE DISCLAIMER</B></a></li>
+<li class="page_item page-item-3301"><a href="https://gpscodisha.com/terms-and-condition.html"><FONT COLOR="purple"><b>TERMS AND CONDITION</b></a></li>  -->
+                                        <!--   <li class="page_item page-item-4705"><a href="https://gpscodisha.com/school-magazine-2018.html"><FONT COLOR="purple"> <b> SAIBHUBANS-2020 </b></font></a></li>   -->
+                                        <li class="page_item page-item-5592"><a
+                                                href="https://gpscodisha.com/principal-message.html">
+                                                <FONT COLOR="purple"> <b>PRINCIPAL&#8217;S MESSAGE</b>
+                                            </a></li>
+                                        <li class="page_item page-item-5875"><a
+                                                href="https://gpscodisha.com/photo-gallery-2019-2.html">
+                                                <FONT COLOR="purple"> <b> PHOTO GALLERY-2022-23</b>
+                                            </a></li>
+                                        <!--   <li class="page_item page-item-6194"><a href="https://gpscodisha.com/scholarship.html"><FONT COLOR="purple"> <b> SCHOLARSHIP</b><img src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" align="center" width="32" height="19"></a></li>
+ <!--  <li class="page_item page-item-7266"><a href="https://gpscodisha.com/aissee-2021-22.html"><FONT COLOR="purple"> <b>AISSEE-2022</b></font><img src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" align="center" width="32" height="19"></a></li>   -->
+                                        <li class="page_item page-item-7965"><a
+                                                href="https://gpscodisha.com/library-blog.html">
+                                                <FONT COLOR="purple"> <B>LIBRARY BLOG</B></FONT>
+                                            </a></li> -->
+                                        <li class="page_item page-item-8279"><a
+                                                href="https://gpscodisha.com/recruitment.html">
+                                                <FONT COLOR="purple"> <b>CAREER</b></font>
+                                            </a></li>
+                                        <!--    <li class="page_item page-item-8428"><a href="https://gpscodisha.com/ppc-2022.html"><FONT COLOR="purple"> <b>PPC- 2022</b><img src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" align="center" width="32" height="19"></a></li>     -->
+                                        <!--  <li class="page_item page-item-8500"><a href="https://gpscodisha.com/re-tender-2022.html"><FONT COLOR="purple"> <b>RE-TENDER-2022</b></font><img src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" align="center" width="32" height="19"></a></li>  -->
+                                        <!-- <li class="page_item page-item-8544"><a href="https://gpscodisha.com/mandatory-public-disclosure.html"><FONT COLOR="purple"> <b>MANDATORY PUBLIC DISCLOSURE</b></font><img src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" align="center" width="32" height="19"></a></li>
+<li class="page_item page-item-8653"><a href="https://gpscodisha.com/vacation.html"><FONT COLOR="purple"> <b>Vacation 2022-23</b><img class="" src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" width="27" height="18" align="center"></a></li>
+<li class="page_item page-item-1179"><a href="https://gpscodisha.com/downloads.html"><FONT COLOR="purple"> <b>TC ISSUED</b></font></a></li>  -->
+                                        <!-- <li class="page_item page-item-2044"><a href="https://gpscodisha.com/principals-archive.html"><FONT COLOR="purple"><B>PRINCIPALS&#8217; ARCHIVE</B></FONT></a></li>-->
+                                        <li class="page_item page-item-1076"><a
+                                                href="https://gpscodisha.com/information-about-school.html">
+                                                <FONT COLOR="purple"> <b>INFORMATION ABOUT SCHOOL</b>
+                                            </a></li>
+                                        <!-- <li class="page_item page-item-6691"><a href="https://gpscodisha.com/extramarks.html"><FONT COLOR="purple"> <b> E_LEARNING</b></a></li>
+<li class="page_item page-item-20"><a href="https://gpscodisha.com/about-house.html"><FONT COLOR="purple"> <b>ABOUT HOUSE</b></a></li>  -->
+                                        <li class="page_item page-item-32"><a
+                                                href="https://gpscodisha.com/faculty.html">
+                                                <FONT COLOR="purple"><b>STAFF</b>
+                                            </a></li>
+                                        <!-- <li class="page_item page-item-112"><a href="https://gpscodisha.com/results.html"><FONT COLOR="purple"> <b>Examination 2021-22</b><img src="http://sainikschoolbhubaneswar.org/wp-content/uploads/2016/02/new4.gif" align="center" width="32" height="19"></a></li>
+<li class="page_item page-item-874"><a href="https://gpscodisha.com/nda-result.html"><FONT COLOR="purple"> <b> NDA RESULT</b></a></li>  -->
+                                        <li class="page_item page-item-655"><a
+                                                href="https://gpscodisha.com/facilities.html">
+                                                <FONT COLOR="purple"><b>FACILITIES</b>
+                                            </a></li>
+                                        <!-- <li class="page_item page-item-613"><a href="https://gpscodisha.com/annapurna.html"><FONT COLOR="purple"><b>ANNAPURNA</b></a></li>
+<li class="page_item page-item-40"><a href="https://gpscodisha.com/alumni.html"><FONT COLOR="purple"><b>ALUMNI</b></a></li>  -->
+                                        <!--   <li class="page_item page-item-24"><a href="https://gpscodisha.com/guest-book.html"><FONT COLOR="PURPLE"><b>VISITORS IMPRINT</b></a></li>   -->
+                                        <li class="page_item page-item-50"><a
+                                                href="https://gpscodisha.com/contact-us.html">
+                                                <FONT COLOR="PURPLE"><b>CONTACT US</b>
+                                            </a></li>
+                                        <!--   <li class="page_item page-item-54"><a href="https://gpscodisha.com/feedback.html"><FONT COLOR="PURPLE"><b>FEEDBACK</b></a></li>   -->
+                                        <p>
+
+
+                                            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                                            &nbsp;
+                                            &nbsp;
+
+
+                                        </p>
+
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- middle ---->
+            <div class="leftright"></div>
+            <style type="text/css">
+                .hide {
+                    font-size: 1.5em;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    border-bottom: 1px solid #FFA308;
+                    background-image: url(https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/images/main_27.jpg);
+                    background-repeat: no-repeat;
+                    padding: 0px 0px 0px 0px;
+                    text-indent: 20px;
+                    margin: 5px 0px 5px 0px;
+                }
+            </style>
+            <div class="center">
+                <div class="middle" style="height:780px; max-height:850px">
+                    <div align="center">
+                        <table cellpadding="0" cellspacing="0" class="moduletable">
+                            <tbody>
+                                <tr>
+                                    <th valign="top" style="font-weight:bold">
+                                        <!--
+                  <div class="widget"><marquee scrollamount="1" scrolldelay="1" direction="left" style="height:10"><a href="https://www.youtube.com/watch?v=TmRrQEWZRNw">     <font color="red" size="2">Pariksha Pe Charcha 2022! </font></a>
+<br>
+<a href="https://sainikschoolbhubaneswar.org/wp-content/uploads/2022/03/Revised-result-Sheet-for-School-website.pdf">     <font color="red" size='2'>AISSEE-2022: INITIAL CALL LIST (CORRIGENDUM AND ADDENDUM)
+ </font></a>
+<br>
+<a href="https://aissee.nta.nic.in"><font size="2" color="red">LINK FOR ADMISSION-2022 ONLINE APPLICATION</font></a><br><a href="https://sainikschoolbhubaneswar.org/wp-content/uploads/2021/09/Information-Bullettin-AISSEE-2022.pdf "><font size=2 color="red">ADMISSION-2022 INFORMATION BULLETIN</font></a><br> 
+<font size="2" color="blue"> 
+CBSE Affiliation No. 1530010 ,School Code 08302
+<body link="#CC0000 vlink="#00FF00" alink="#FF0000">
+<br>
+<a href=" https://ommcomnews.com/odisha-news/sainik-school-bhubaneswar-proud-of-its-alumnus-shaurya-chakra-awardee-captain-ashutosh-kumar"></a></marquee></div><div class="widget"><marquee scrollamount="1" scrolldelay="1" direction="left" style="height:10"><font size=2 color="red"> Admissions are Open <br>
+</marquee></div>    
+-->
+
+                                        <script>
+                document.getElementById('counter').innerHTML = " {total 1940}";
+                                        </script>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div align="center">
+                                            <object id="FlashID" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+                                                width="490" height="60" style="visibility: visible; ">
+                                                <param name="movie"
+                                                    value="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/Movie1.swf">
+                                                <param name="quality" value="high">
+                                                <param name="wmode" value="opaque">
+                                                <param name="swfversion" value="6.0.65.0">
+                                                <!-- This param tag prompts users with Flash Player 6.0 r65 and higher to download the latest version of Flash Player. Delete it if you don�t want users to see the prompt. -->
+                                                <param name="expressinstall" value="scripts/expressInstall.swf">
+                                                <!-- Next object tag is for non-IE browsers. So hide it from IE using IECC. -->
+                                                <!--[if !IE]>-->
+                                                <object type="application/x-shockwave-flash"
+                                                    data="https://sainikschoolbhubaneswar.org/wp-content/themes/ssb/Movie1.swf"
+                                                    width="490" height="60">
+                                                    <!--<![endif]-->
+                                                    <param name="quality" value="high">
+                                                    <param name="wmode" value="opaque">
+                                                    <param name="swfversion" value="6.0.65.0">
+                                                    <param name="expressinstall" value="scripts/expressInstall.swf">
+                                                    <!-- The browser displays the following alternative content for users with Flash Player 6.0 and older. -->
+                                                    <div>
+                                                        <h4></h4>
+                                                    </div>
+                                                    <!--[if !IE]>-->
+                                                </object>
+                                                <!--<![endif]-->
+                                            </object>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="font-size:12px; text-align:justify">
+                        <p><a href="./assets/gurukul_poster.jpg"><img class="alignnone size-medium wp-image-8400"
+                                    src="./assets/gurukul_poster.jpg" alt="" width="450" height="230" border="2"></a>
+                        </p>
+                        <div style="width: 450px;" class="wp-video">
+                            <!--[if lt IE 9]><script>document.createElement('video');</script><![endif]-->
+                            <video class="wp-video-shortcode" id="video-6-1" width="450" height="230" preload="metadata"
+                                controls="controls">
+                                <source type="video/mp4" src="./assets/school_video.mp4" /><a
+                                    href="https://www.youtube.com/watch?v=TmRrQEWZRNw">https://www.youtube.com/watch?v=TmRrQEWZRNw</a>
+                            </video>
+                        </div>
+
+
+                    </div>
+                    <br />
+                    <ul>
+                        <div class="widget">
+                            <h6 class="hide">Chairperson</h6><a href="./assets/master.jpeg" target="_self"
+                                class="widget_sp_image-image-link" title="Chairperson"><img width="448" height="336"
+                                    alt="Chairperson" class="attachment-448x336 aligncenter" style="max-width: 100%;"
+                                    src="./assets/master.jpeg" /></a>
+                            <div class="widget_sp_image-description">
+                                <p>
+                                    <FONT SIZE='3'><b> Abhay Kumar Jena</b>
+                                </p>
+                                <p ALIGN='CENTER'> <b> </b></p>
+                                <p>
+                                    <FONT SIZE='1'>
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </ul>
+                    <div>
+                        <div style="float:left; padding-left:0px; max-height:100px; width:200px">
+                            <div class="widget">
+                                <h6 class="hide">Principal</h6><a href="./assets/principal.jpg" target="_self"
+                                    class="widget_sp_image-image-link" title="Principal"><img width="259" height="185"
+                                        alt="Principal" class="attachment-259x185 aligncenter" style="max-width: 100%;"
+                                        src="./assets/principal.jpg" /></a>
+                                <div class="widget_sp_image-description">
+                                    <p ALIGN="center"><b> Dr. Sasmita Tripathy </b></p>
+                                    <p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="float:left; margin-left: 60px; max-height:100px; width:200px">
+                            <div class="widget">
+                                <h6 class="hide">Vice Principal</h6><a href="./assets/Vice Principal Photo.jpg"
+                                    target="_self" class="widget_sp_image-image-link" title="VICE PRINCIPAL"><img
+                                        width="259" height="185" alt="VICE PRINCIPAL"
+                                        class="attachment-259x185 aligncenter" style="max-width: 100%;"
+                                        src="./assets/Vice Principal Photo.jpg" /></a>
+                                <div class="widget_sp_image-description">
+                                    <p ALIGN="center"><b> Mr. Sudhanshu Shekhar Panda </b></p>
+                                    <p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+                <style type="text/css">
+
+
+                    ul li.widget {
+                        text-align: left
+                    }
+
+                    h2.widgettitle {
+                        color: #900;
+                        background-color: #CCC;
+                        padding-left: 2px;
+                        font-size: 13px;
+                        font-weight: bold;
+                        text-align: center
+                    }
+
+                    .widgettitle {
+                        text-decoration: blink;
+                    }
+                </style>
+                <div class="sidebar">
+                    <ul style="text-align:center">
+                        <!--
+                    <li id="widget_sp_image-26" class="widget widget_sp_image"><h2 class="widgettitle">Staff and Faculty GPS</h2>
+<a  target="_self" class="widget_sp_image-image-link" title="Staff and Faculty"><img width="300" height="206" alt="Staff and Faculty" class="attachment-medium aligncenter" style="max-width: 100%;"  src="./assets/teachers.gif" /></a></li> 
+-->
+                        <li id="widget_sp_image-9" class="widget widget_sp_image">
+                            <h2 class="widgettitle">Cultural Activity</h2>
+                            <a target="_self" class="widget_sp_image-image-link"
+                                title="Gurukul Public School Hostel"><img width="284" height="188"
+                                    alt="Gurukul Public School Cultural Activity" class="attachment-284x188 aligncenter"
+                                    style="max-width: 100%;" src="./assets/culture.gif" /></a>
+                        </li>
+                        <!--
+<li id="widget_sp_image-11" class="widget widget_sp_image"><h2 class="widgettitle"> Campus</h2>
+<a target="_self" class="widget_sp_image-image-link" title="Gurukul Public School "><img width="270" height="188" alt="infrastructure " class="attachment-full aligncenter" style="max-width: 100%;" src="./assets/building.gif" /></a></li>
+-->
+                    </ul>
+                </div>
+
+                
+
+
+
+
+            </div>
+            
+            <div class="wrapper">
+
+                <div class="container-calendar">
+                    <h1 style="text-align:center;color:red;"> CALENDAR </h1>
+                  <h3 id="monthAndYear"></h3>
+              
+                  <div class="button-container-calendar">
+                    <button id="previous" onclick="previous()">&#8249;</button>
+                    <button id="next" onclick="next()">&#8250;</button>
+                  </div>
+              
+                  <table class="table-calendar" id="calendar" data-lang="en">
+                    <thead id="thead-month"></thead>
+                    <tbody id="calendar-body"></tbody>
+                  </table>
+              
+                  <div class="footer-container-calendar">
+                    <label for="month">Jump To: </label>
+                    <select id="month" onchange="jump()">
+                      <option value=0>Jan</option>
+                      <option value=1>Feb</option>
+                      <option value=2>Mar</option>
+                      <option value=3>Apr</option>
+                      <option value=4>May</option>
+                      <option value=5>Jun</option>
+                      <option value=6>Jul</option>
+                      <option value=7>Aug</option>
+                      <option value=8>Sep</option>
+                      <option value=9>Oct</option>
+                      <option value=10>Nov</option>
+                      <option value=11>Dec</option>
+                    </select>
+                    <select id="year" onchange="jump()"></select>
+                  </div>
+              
+                </div>
+              
+              </div>
+
+              <script>
+              function generate_year_range(start, end) {
+                  var years = "";
+                  for (var year = start; year <= end; year++) {
+                      years += "<option value='" + year + "'>" + year + "</option>";
+                  }
+                  return years;
+              }
+              
+              today = new Date();
+              currentMonth = today.getMonth();
+              currentYear = today.getFullYear();
+              selectYear = document.getElementById("year");
+              selectMonth = document.getElementById("month");
+              
+              
+              createYear = generate_year_range(1970, 2050);
+              /** or
+               * createYear = generate_year_range( 1970, currentYear );
+               */
+              
+              document.getElementById("year").innerHTML = createYear;
+              
+              var calendar = document.getElementById("calendar");
+              var lang = calendar.getAttribute('data-lang');
+              
+              var months = "";
+              var days = "";
+              
+              var monthDefault = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+              
+              var dayDefault = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+              
+              if (lang == "en") {
+                  months = monthDefault;
+                  days = dayDefault;
+              } else if (lang == "id") {
+                  months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                  days = ["Ming", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+              } else if (lang == "fr") {
+                  months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+                  days = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+              } else {
+                  months = monthDefault;
+                  days = dayDefault;
+              }
+              
+              
+              var $dataHead = "<tr>";
+              for (dhead in days) {
+                  $dataHead += "<th data-days='" + days[dhead] + "'>" + days[dhead] + "</th>";
+              }
+              $dataHead += "</tr>";
+              
+              //alert($dataHead);
+              document.getElementById("thead-month").innerHTML = $dataHead;
+              
+              
+              monthAndYear = document.getElementById("monthAndYear");
+              showCalendar(currentMonth, currentYear);
+              
+              
+              
+              function next() {
+                  currentYear = (currentMonth === 11) ? currentYear + 1 : currentYear;
+                  currentMonth = (currentMonth + 1) % 12;
+                  showCalendar(currentMonth, currentYear);
+              }
+              
+              function previous() {
+                  currentYear = (currentMonth === 0) ? currentYear - 1 : currentYear;
+                  currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
+                  showCalendar(currentMonth, currentYear);
+              }
+              
+              function jump() {
+                  currentYear = parseInt(selectYear.value);
+                  currentMonth = parseInt(selectMonth.value);
+                  showCalendar(currentMonth, currentYear);
+              }
+              
+              function showCalendar(month, year) {
+              
+                  var firstDay = ( new Date( year, month ) ).getDay();
+              
+                  tbl = document.getElementById("calendar-body");
+              
+                  
+                  tbl.innerHTML = "";
+              
+                  
+                  monthAndYear.innerHTML = months[month] + " " + year;
+                  selectYear.value = year;
+                  selectMonth.value = month;
+              
+                  // creating all cells
+                  var date = 1;
+                  for ( var i = 0; i < 6; i++ ) {
+                      
+                      var row = document.createElement("tr");
+              
+                      
+                      for ( var j = 0; j < 7; j++ ) {
+                          if ( i === 0 && j < firstDay ) {
+                              cell = document.createElement( "td" );
+                              cellText = document.createTextNode("");
+                              cell.appendChild(cellText);
+                              row.appendChild(cell);
+                          } else if (date > daysInMonth(month, year)) {
+                              break;
+                          } else {
+                              cell = document.createElement("td");
+                              cell.setAttribute("data-date", date);
+                              cell.setAttribute("data-month", month + 1);
+                              cell.setAttribute("data-year", year);
+                              cell.setAttribute("data-month_name", months[month]);
+                              cell.className = "date-picker";
+                              cell.innerHTML = "<span>" + date + "</span>";
+              
+                              if ( date === today.getDate() && year === today.getFullYear() && month === today.getMonth() ) {
+                                  cell.className = "date-picker selected";
+                              }
+                              row.appendChild(cell);
+                              date++;
+                          }
+              
+              
+                      }
+              
+                      tbl.appendChild(row);
+                  }
+              
+              }
+              
+              function daysInMonth(iMonth, iYear) {
+                  return 32 - new Date(iYear, iMonth, 32).getDate();
+              }
+              </script>   
+        
+        <div class="container-calendar wrapper">
+            <h1 style="text-align:center;color:red;"> WEATHER </h1>
+        <section id="demo">
+            <div class="ow-widget">
+                <div class="ow-row">
+                    <span class="ow-city-name"></span>
+                </div>
+                <div class="ow-row">
+                    <div class="wi ow-ico ow-ico-current pull-left"></div>
+                    <div class="ow-temp-current pull-left"></div>
+                    <div class="ow-current-desc pull-left">
+                        <div>Pressure: <span class="ow-pressure"></span></div>
+                        <div>Humidity: <span class="ow-humidity"></span></div>
+                        <div>Wind: <span class="ow-wind"></span></div>
+                    </div>
+                </div>
+                <div class="ow-row ow-forecast">
+                    <div class="ow-forecast-item">
+                        <div class="ow-day"></div>
+                        <div class="wi ow-ico ow-ico-forecast"></div>
+                        <div class="ow-forecast-temp">
+                            <span class="max"></span>
+                            <span class="min"></span>
+                        </div>
+                    </div>
+        
+                    <div class="ow-forecast-item">
+                        <div class="ow-day"></div>
+                        <div class="wi ow-ico ow-ico-forecast"></div>
+                        <div class="ow-forecast-temp">
+                            <span class="max"></span>
+                            <span class="min"></span>
+                        </div>
+                    </div>
+        
+                    <div class="ow-forecast-item">
+                        <div class="ow-day"></div>
+                        <div class="wi ow-ico ow-ico-forecast"></div>
+                        <div class="ow-forecast-temp">
+                            <span class="max"></span>
+                            <span class="min"></span>
+                        </div>
+                    </div>
+        
+                    <div class="ow-forecast-item">
+                        <div class="ow-day"></div>
+                        <div class="wi ow-ico ow-ico-forecast"></div>
+                        <div class="ow-forecast-temp">
+                            <span class="max"></span>
+                            <span class="min"></span>
+                        </div>
+                    </div>
+        
+                </div>
+            </div>
+        </section>
+    </div>
+  <script>
+      
+'use strict';
+
+let weatherWidget = {
+  settings: {
+      api_key: '6bd5b850178e2134497c4b965fbaf54e',
+      weather_url: 'https://api.openweathermap.org/data/2.5/weather',
+      forecast_url: 'https://api.openweathermap.org/data/2.5/forecast',
+      search_type: 'city_name',
+      city_name: '',
+      units: 'metric',
+      icon_mapping: {
+          '01d': 'wi-day-sunny',
+          '01n': 'wi-day-sunny',
+          '02d': 'wi-day-cloudy',
+          '02n': 'wi-day-cloudy',
+          '03d': 'wi-cloud',
+          '03n': 'wi-cloud',
+          '04d': 'wi-cloudy',
+          '04n': 'wi-cloudy',
+          '09d': 'wi-rain',
+          '09n': 'wi-rain',
+          '10d': 'wi-day-rain',
+          '10n': 'wi-day-rain',
+          '11d': 'wi-thunderstorm',
+          '11n': 'wi-thunderstorm',
+          '13d': 'wi-snow',
+          '13n': 'wi-snow',
+          '50d': 'wi-fog',
+          '50n': 'wi-fog'
+      }
+  },
+  constant: {
+      dow: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+  }
+};
+
+weatherWidget.init = function (settings) {
+  this.settings = Object.assign(this.settings, settings);
+  Promise.all([this.getWeather(), this.getForecast()]).then((resolve) => {
+      let weather = resolve[0];
+      let forecast = resolve[1].list;
+
+      //@TODO lokalizacja bez zwrotki, blad
+
+      document.getElementsByClassName('ow-city-name')[0].innerHTML = weather.name;
+      document.getElementsByClassName('ow-temp-current')[0].innerHTML = Math.round(weather.main.temp) + '&deg';
+      document.getElementsByClassName('ow-pressure')[0].innerHTML = weather.main.pressure + ' hPa';
+      document.getElementsByClassName('ow-humidity')[0].innerHTML = weather.main.humidity + '%';
+      document.getElementsByClassName('ow-wind')[0].innerHTML = weather.wind.speed + ' km/h';
+      if (!!this.settings.icon_mapping[weather.weather[0].icon]) {
+          let icon = this.settings.icon_mapping[weather.weather[0].icon];
+          let ico_current =  document.getElementsByClassName('ow-ico-current')[0];
+          if (ico_current.classList) {
+              ico_current.classList.add(icon);
+          } else {
+              ico_current.className += ' ' + icon;
+          }
+
+      }
+
+      // split forecast data by day
+      // get max and min temperature for a day
+      //@TODO get average forecast by day
+
+      // remove todays weather from forecast
+      forecast = forecast.filter((x) => {
+          return x.dt_txt.substr(0, 10) !== new Date().toJSON().slice(0, 10);
+      });
+
+      // array to hold forecast items
+      let fs = [];
+
+      for (let f of forecast) {
+          let date = f.dt_txt.substr(0, 10);
+          if (!!fs[date]) {
+              fs[date].temp_max = f.main.temp_max > fs[date].temp_max ? f.main.temp_max : fs[date].temp_max;
+              fs[date].temp_min = f.main.temp_min < fs[date].temp_min ? f.main.temp_min : fs[date].temp_min;
+              fs[date].icons.push(f.weather[0].icon);
+          } else {
+              fs[date] = {
+                  dow: this.constant.dow[new Date(date).getDay()],
+                  temp_max: f.main.temp_max,
+                  temp_min: f.main.temp_min,
+                  icons: [f.weather[0].icon]
+              }
+          }
+      }
+
+      let forecast_items = document.getElementsByClassName('ow-forecast-item');
+
+      // for each daily forecast, get weather icon with highest occurence
+      // show the foreacast
+      let counter = 0;
+      for (let day in fs) {
+          let icon = this.settings.icon_mapping[this.getIconWithHighestOccurence(fs[day].icons)];
+          let fi = forecast_items[counter];
+          fi.getElementsByClassName('max')[0].innerHTML = Math.round(fs[day].temp_max) + '&deg';
+          fi.getElementsByClassName('min')[0].innerHTML = Math.round(fs[day].temp_min) + '&deg';
+          fi.getElementsByClassName('ow-day')[0].innerHTML = fs[day].dow;
+          let ico_current =  fi.getElementsByClassName('ow-ico-forecast')[0];
+          if (ico_current.classList) {
+              ico_current.classList.add(icon);
+          } else {
+              ico_current.className += ' ' + icon;
+          }
+          counter++;
+      }
+
+  });
+};
+
+weatherWidget.getForecast = function () {
+  let params = {
+      'q': this.settings.city_name,
+      'APPID': this.settings.api_key,
+      'units': this.settings.units
+  };
+
+  let p = '?' + Object.keys(params)
+          .map((key) => {
+              return key + '=' + params[key]
+          })
+          .join('&');
+  return this.makeRequest(this.settings.forecast_url, p);
+};
+
+weatherWidget.getWeather = function () {
+  let params = {
+      'q': this.settings.city_name,
+      'APPID': this.settings.api_key,
+      'units': this.settings.units
+  };
+
+  let p = '?' + Object.keys(params)
+          .map((key) => {
+              return key + '=' + params[key]
+          })
+          .join('&');
+  return this.makeRequest(this.settings.weather_url, p);
+};
+
+weatherWidget.makeRequest = function (url, params) {
+  return new Promise(function (resolve, reject) {
+      let req = new XMLHttpRequest();
+      req.open('GET', url + params, true);
+      req.responseType = 'json';
+
+      req.onload = function () {
+          if (req.status >= 200 && req.status < 400) {
+              resolve(req.response);
+          } else {
+              reject(Error(req.status));
+          }
+      };
+
+      req.onerror = () => reject('Error occured while connecting to Weather API');
+      req.send(params);
+  });
+};
+
+weatherWidget.getIconWithHighestOccurence = function (a) {
+  let elems = Array.prototype.slice.call(a);
+  return elems.sort((a, b) =>
+      elems.filter(v => v === a).length - elems.filter(v => v === b).length
+  ).pop();
+}
+
+// run the widget
+let widget = Object.create(weatherWidget);
+widget.init({
+city_name: 'Chandikhol'
+});
+  </script>
+
+
+</div>
+
+</div>
+        <br clear="all" />
+        <div class="footerout">
+            <div class="footer">
+                <div align="center" style="color:gray"><br />
+                    <div style="width:100%;">
+                        <div class="">@Copyright Policy</div>
+                        <div style="width:50%;display: flex; justify-content:center">
+                            <a target="_blank" href="https://www.facebook.com/profile.php?id=100078132136942">
+                                <img src="./assets/icons8-facebook-48.png" />
+                            </a>
+                            <a target="_blank" href="https://www.instagram.com/examgpsjajpur/">
+                                <img src="./assets/icons8-instagram-48.png" />
+                            </a>
+                            <a target="_blank" href="https://youtube.com/channel/UCg5woREPHs_XPYfsEsCLr2w">
+                                <img src="./assets/icons8-youtube-48.png" />
+                            </a>
+                        </div>
+                    </div>
+                    <br />
+                    &copy; 2022 Gurukul Public School, Chandikhol
+                </div>
+                <!--<div align="center"><a href="#">!</a>.</div> -->
+            </div>
+        </div>
+    </div>
+
+    </div>
+</body>
+</html>
